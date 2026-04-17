@@ -2,6 +2,33 @@
 const { numeroAleatorio } = require("../utils/random");
 
 let estadoActual = { ...estadoInicial };
+const personalTotal = 12;
+const quirofanosTotales = 6;
+const quirofanosActivos = 4;
+
+function construirEstadoBase(ahora) {
+  const timestamp = ahora.toISOString();
+  const horaDelDia = ahora.getHours();
+  const tiempoEsperaMin = Math.round(
+    (estadoActual.pacientes_espera / Math.max(1, estadoActual.personal_activo)) * 8
+  );
+
+  return {
+    area: estadoActual.area,
+    pacientes_espera: estadoActual.pacientes_espera,
+    pacientes_atendidos: estadoActual.pacientes_atendidos,
+    camas_totales: estadoActual.camas_totales,
+    camas_ocupadas: estadoActual.camas_ocupadas,
+    camas_disponibles: estadoActual.camas_disponibles,
+    personal_activo: estadoActual.personal_activo,
+    personal_total: personalTotal,
+    quirofanos_totales: quirofanosTotales,
+    quirofanos_activos: quirofanosActivos,
+    tiempo_espera_min: tiempoEsperaMin,
+    hora_del_dia: horaDelDia,
+    timestamp
+  };
+}
 
 function simularLlegadaPacientes(modoCrisis = false) {
   if (modoCrisis) {
@@ -42,19 +69,26 @@ function generarEstadoHospitalario(opciones = {}) {
   estadoActual.camas_ocupadas = Math.max(0, Math.min(camasOcupadasActualizadas, estadoActual.camas_totales));
   estadoActual.camas_disponibles = estadoActual.camas_totales - estadoActual.camas_ocupadas;
 
+  const estadoBase = construirEstadoBase(new Date());
+
   return {
-    area: estadoActual.area,
-    pacientes_espera: estadoActual.pacientes_espera,
-    pacientes_atendidos: estadoActual.pacientes_atendidos,
-    camas_totales: estadoActual.camas_totales,
-    camas_ocupadas: estadoActual.camas_ocupadas,
-    camas_disponibles: estadoActual.camas_disponibles,
-    personal_activo: estadoActual.personal_activo,
+    area: estadoBase.area,
+    pacientes_espera: estadoBase.pacientes_espera,
+    pacientes_atendidos: estadoBase.pacientes_atendidos,
+    camas_totales: estadoBase.camas_totales,
+    camas_ocupadas: estadoBase.camas_ocupadas,
+    camas_disponibles: estadoBase.camas_disponibles,
+    personal_activo: estadoBase.personal_activo,
+    personal_total: estadoBase.personal_total,
+    quirofanos_totales: estadoBase.quirofanos_totales,
+    quirofanos_activos: estadoBase.quirofanos_activos,
+    tiempo_espera_min: estadoBase.tiempo_espera_min,
+    hora_del_dia: estadoBase.hora_del_dia,
     nuevos_pacientes: nuevosPacientes,
     pacientes_atendidos_ciclo: pacientesAtendidosCiclo,
     pacientes_con_cama: pacientesConCama,
     altas_ciclo: altasCiclo,
-    timestamp: new Date().toISOString()
+    timestamp: estadoBase.timestamp
   };
 }
 
@@ -62,15 +96,13 @@ function reiniciarSimulacion() {
   estadoActual = { ...estadoInicial };
 
   return {
-    ...estadoActual,
-    timestamp: new Date().toISOString()
+    ...construirEstadoBase(new Date())
   };
 }
 
 function obtenerEstadoActual() {
   return {
-    ...estadoActual,
-    timestamp: new Date().toISOString()
+    ...construirEstadoBase(new Date())
   };
 }
 
