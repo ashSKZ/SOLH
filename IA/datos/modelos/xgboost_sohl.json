@@ -1,0 +1,28 @@
+{
+  "tipo": "regresion_logistica_simple",
+  "feature_order": [
+    "ocupacion_camas",
+    "ocupacion_personal",
+    "ocupacion_quirofanos",
+    "presion_camas",
+    "ratio_paciente_personal",
+    "flujo_neto",
+    "indice_urgencias",
+    "tiempo_espera_min",
+    "factor_hora",
+    "pacientes_urgencias"
+  ],
+  "weights": [
+    0.15830086901758209,
+    0.12726596661370052,
+    -0.0033185205795079006,
+    0.15830086901758209,
+    0.0040164035865908046,
+    0.0005741622025028024,
+    0.24753312416395207,
+    0.02642622600419486,
+    0.21932774762825105,
+    0.05493611118613591
+  ],
+  "bias": -0.4
+}
