@@ -39,11 +39,19 @@ function mostrarDashboard(estado) {
   console.log(`Area monitoreada:          ${estado.area}`);
   console.log(`Modo actual:               ${modoCrisis ? "CRISIS" : "NORMAL"}`);
   console.log(`Hora:                      ${estado.timestamp}`);
+  console.log(`Hora del dia:              ${estado.hora_del_dia}:00`);
   console.log("--------------------------------------------------");
 
   console.log(`Pacientes en espera:       ${estado.pacientes_espera}`);
   console.log(`Pacientes atendidos:       ${estado.pacientes_atendidos}`);
+  console.log(`Tiempo espera (min):       ${estado.tiempo_espera_min}`);
+
+  console.log("--------------------------------------------------");
+
   console.log(`Personal activo:           ${estado.personal_activo}`);
+  console.log(`Personal total:            ${estado.personal_total}`);
+  console.log(`Quirofanos activos:        ${estado.quirofanos_activos}`);
+  console.log(`Quirofanos totales:        ${estado.quirofanos_totales}`);
 
   console.log("--------------------------------------------------");
 

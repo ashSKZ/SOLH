@@ -1,0 +1,131 @@
+﻿RESUMEN DE ESTRUCTURA Y FUNCIONAMIENTO - MODULO SIMULACION (SOLH)
+
+Resumen funcional de Simulacion
+Simulacion es un modulo independiente en Node.js (CommonJS) que:
+1) Genera snapshots hospitalarios sinteticos por ciclo.
+2) Expone funciones reutilizables desde src/index.js.
+3) Incluye prueba local (npm test), monitor en consola en tiempo real (npm run monitor) y utilidades para enviar snapshots por POST (post-once, post-loop).
+4) No usa base de datos, no usa Express dentro de esta carpeta y no depende de frontend.
+
+Que se hizo
+1) Se mantuvo la logica central en src/services/simulacionService.js.
+2) Se agregaron campos nuevos al snapshot:
+- personal_total (12)
+- quirofanos_totales (6)
+- quirofanos_activos (4)
+- tiempo_espera_min (Math.round((pacientes_espera / Math.max(1, personal_activo)) * 8))
+- hora_del_dia (new Date().getHours())
+3) Se mantuvo el ciclo de simulacion existente (llegadas, atencion, camas, altas).
+4) Se amplio el monitor CLI para mostrar los campos nuevos.
+5) Se agregaron herramientas de integracion POST en tools/integracion.
+
+Estructura actual de archivos (C:\Users\luisl\Documents\SOLH\Simulacion)
+Simulacion/
+|-- package.json
+|-- README.md
+|-- src/
+|   |-- index.js
+|   |-- config/
+|   |   |-- estadoInicial.js
+|   |-- services/
+|   |   |-- simulacionService.js
+|   |-- utils/
+|   |   |-- random.js
+|   |-- test/
+|       |-- pruebaSimulacion.js
+|-- tools/
+    |-- visualizadorCLI/
+    |   |-- monitor.js
+    |-- integracion/
+        |-- enviarSnapshot.js
+        |-- enviarLoop.js
+
+Responsabilidad por archivo
+1) package.json
+- Define scripts:
+  - npm test
+  - npm run monitor
+  - npm run post-once
+  - npm run post-loop
+
+2) src/index.js
+- Punto de exportacion del modulo:
+  - generarEstadoHospitalario
+  - reiniciarSimulacion
+  - obtenerEstadoActual
+
+3) src/config/estadoInicial.js
+- Estado base hospitalario inicial.
+
+4) src/utils/random.js
+- Utilidad numeroAleatorio(min, max).
+
+5) src/services/simulacionService.js
+- Logica principal de simulacion.
+- Mantiene estadoActual interno.
+- Calcula y devuelve snapshots con los campos clinico-operativos y de ciclo.
+
+6) src/test/pruebaSimulacion.js
+- Ejecuta:
+  - Estado inicial
+  - 5 ciclos normal
+  - 5 ciclos crisis
+  - Reinicio
+- Verifica presencia de campos nuevos.
+
+7) tools/visualizadorCLI/monitor.js
+- Dashboard de consola (actualizacion cada 2 segundos).
+- Controles:
+  - C crisis on/off
+  - R reinicio
+  - Q salida
+- Muestra barra de ocupacion y nivel de saturacion.
+
+8) tools/integracion/enviarSnapshot.js
+- Genera un snapshot y lo envia por POST.
+- URL por defecto: http://localhost:3000/api/ingesta/simulacion
+- URL configurable: API_INGESTA_URL
+- Usa fetch nativo si existe; fallback nativo http/https.
+
+9) tools/integracion/enviarLoop.js
+- Envio continuo cada 2 segundos.
+- Soporta modo normal/crisis.
+
+10) README.md
+- Documentacion de uso, campos, monitor e integracion POST.
+
+Formato del snapshot que puede consumir IA
+{
+  "area": "admision",
+  "pacientes_espera": 10,
+  "pacientes_atendidos": 0,
+  "camas_totales": 50,
+  "camas_ocupadas": 30,
+  "camas_disponibles": 20,
+  "personal_activo": 5,
+  "personal_total": 12,
+  "quirofanos_totales": 6,
+  "quirofanos_activos": 4,
+  "tiempo_espera_min": 16,
+  "hora_del_dia": 14,
+  "nuevos_pacientes": 9,
+  "pacientes_atendidos_ciclo": 7,
+  "pacientes_con_cama": 2,
+  "altas_ciclo": 1,
+  "timestamp": "2026-04-17T22:00:00.000Z"
+}
+
+Prompt base sugerido para la carpeta IA
+Toma como fuente de estado hospitalario el modulo local Simulacion.
+El estado llega en formato snapshot JSON con campos operativos, capacidad, flujo de pacientes y tiempo.
+Usa estos campos para inferencia y recomendaciones:
+- demanda: pacientes_espera, nuevos_pacientes, tiempo_espera_min
+- capacidad: camas_totales, camas_ocupadas, camas_disponibles
+- recurso humano: personal_activo, personal_total
+- quirofanos: quirofanos_activos, quirofanos_totales
+- rendimiento: pacientes_atendidos, pacientes_atendidos_ciclo, altas_ciclo
+- contexto temporal: hora_del_dia, timestamp
+- contexto funcional: area
+
+Genera analisis de riesgo operativo y acciones sugeridas priorizadas.
+Evita depender de base de datos; consume el ultimo snapshot disponible por API o input directo.

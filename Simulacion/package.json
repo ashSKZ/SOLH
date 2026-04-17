@@ -4,6 +4,8 @@
   "main": "src/index.js",
   "scripts": {
     "test": "node src/test/pruebaSimulacion.js",
-    "monitor": "node tools/visualizadorCLI/monitor.js"
+    "monitor": "node tools/visualizadorCLI/monitor.js",
+    "post-once": "node tools/integracion/enviarSnapshot.js",
+    "post-loop": "node tools/integracion/enviarLoop.js"
   }
 }
