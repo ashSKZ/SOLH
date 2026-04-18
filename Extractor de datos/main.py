@@ -62,7 +62,7 @@ def guardar_datos(datos, ruta_excel):
 
 # 4. LOGICA PRINCIPAL DE PROCESAMIENTO
 def procesar_extractor():
-    dir_entrada = ruta_relativa("img prueba")
+    dir_entrada = ruta_relativa("imagen de entrada")
     dir_procesados = ruta_relativa("procesados")
     dir_errores = ruta_relativa("errores")
     dir_registros = ruta_relativa("registros")
