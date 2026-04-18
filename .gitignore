@@ -1,26 +1,25 @@
 # -----------------------------------
-# 🐍 Python
+#  Python
 # -----------------------------------
 __pycache__/
 *.py[cod]
 *$py.class
 
 # -----------------------------------
-# 📦 Entornos virtuales
+#  Entornos virtuales
 # -----------------------------------
 venv/
 env/
 .venv/
 
 # -----------------------------------
-# ⚙️ Configuración local
+#  Configuración local
 # -----------------------------------
 .env
 .env.*
 
 # -----------------------------------
-# 📊 Archivos de datos / modelos IA
-# (MUY importante para tu proyecto)
+#  Archivos de datos / modelos IA
 # -----------------------------------
 datos/modelos/*.json
 datos/modelos/*.pkl
@@ -31,31 +30,31 @@ datos/modelos/*.joblib
 *.csv
 
 # -----------------------------------
-# 🧪 Testing / coverage
+#  Testing / coverage
 # -----------------------------------
 .coverage
 htmlcov/
 .pytest_cache/
 
 # -----------------------------------
-# 🧠 Jupyter (si usas)
+# Jupyter (si usas)
 # -----------------------------------
 .ipynb_checkpoints/
 
 # -----------------------------------
-# 🖥️ IDEs
+#  IDEs
 # -----------------------------------
 .vscode/
 .idea/
 
 # -----------------------------------
-# 🪟 Windows
+#  Windows
 # -----------------------------------
 Thumbs.db
 Desktop.ini
 
 # -----------------------------------
-# 🍎 Mac (por si acaso)
+#  Mac (por si acaso)
 # -----------------------------------
 .DS_Store
 
