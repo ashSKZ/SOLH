@@ -20,7 +20,10 @@ const generarPrediccion = async (req, res) => {
       accion: resultadoIA.accion
     });
 
-    res.json(nueva);
+    res.json({
+      success: true,
+      data: nueva
+    });
 
   } catch (error) {
     console.error(error);
@@ -33,7 +36,10 @@ const getPredicciones = async (req, res) => {
     .sort({ createdAt: -1 })
     .limit(10);
 
-  res.json(datos);
+  res.json({
+    success: true,
+    data: datos
+  });
 };
 
 module.exports = {
