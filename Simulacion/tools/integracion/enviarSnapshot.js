@@ -2,7 +2,7 @@
 const http = require("http");
 const https = require("https");
 
-const API_INGESTA_URL = process.env.API_INGESTA_URL || "http://localhost:3000/api/ingesta/simulacion";
+const url = process.env.API_INGESTA_URL || "http://localhost:5000/api/simular";
 
 function postConHttp(url, data) {
   return new Promise((resolve, reject) => {
@@ -56,7 +56,7 @@ async function enviarSnapshot(opciones = {}) {
   let respuesta;
 
   if (typeof fetch === "function") {
-    const response = await fetch(API_INGESTA_URL, {
+    const response = await fetch(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -77,7 +77,7 @@ async function enviarSnapshot(opciones = {}) {
       body
     };
   } else {
-    respuesta = await postConHttp(API_INGESTA_URL, snapshot);
+    respuesta = await postConHttp(url, snapshot);
   }
 
   console.log("Snapshot enviado:");
