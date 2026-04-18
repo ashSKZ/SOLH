@@ -134,3 +134,17 @@ export function selectDay(dayIndex, DATA) {
     <div class="stat-item"><span class="stat-label">DÍA</span><span class="stat-val">${dia.label}</span></div>
   `;
 }
+
+export function updateChart(DATA) {
+  if (!histChart) return;
+
+  // Solo actualiza en modo "actual"
+  if (chartMode !== 'actual') return;
+
+  histChart.data.labels = DATA.labels_12h;
+
+  histChart.data.datasets[0].data =
+    DATA.historial_dias?.[0]?.data || [];
+
+  histChart.update('active');
+}

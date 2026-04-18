@@ -11,16 +11,11 @@ import {
 import {
   initChart,
   switchChart,
-  selectDay
+  selectDay,
+  updateChart // 🔥 NUEVO
 } from "./charts/chart.js";
 
-/* 🔥 NUEVO SIM */
-import {
-  startSim,
-  togglePausa
-} from "./simulation/sim.js";
-
-/* 🔥 NUEVO API */
+/* 🔥 API */
 import {
   getResumen,
   getGrafica,
@@ -28,13 +23,10 @@ import {
 } from "./services/api.js";
 
 /* ── Estado global ── */
-let DATA         = {};
-let histChart    = null;
-let chartMode    = 'actual';
-let selectedDay  = 0;
+let DATA = {};
 
 /* =============================================================================
-   CARGA DE DATOS
+   CARGA INICIAL
    ============================================================================= */
 async function loadData() {
   try {
@@ -56,7 +48,7 @@ async function loadData() {
 }
 
 /* =============================================================================
-   🔥 NUEVO: REFRESH EN TIEMPO REAL
+   🔥 REFRESH EN TIEMPO REAL
    ============================================================================= */
 async function refreshData() {
   try {
@@ -70,10 +62,13 @@ async function refreshData() {
       alerts: alertas
     };
 
-    /* 🔥 SOLO ACTUALIZA, NO REINICIA */
+    /* UI */
     renderKPIs();
     buildAreas(DATA);
     buildAlerts(DATA);
+
+    /* 🔥 ACTUALIZA GRÁFICA */
+    updateChart(DATA);
 
   } catch (err) {
     console.error('[SOLH] Error refresh:', err);
@@ -81,7 +76,7 @@ async function refreshData() {
 }
 
 /* =============================================================================
-   RENDER KPIs
+   KPIs
    ============================================================================= */
 function renderKPIs() {
   document.getElementById("kpi-pac").textContent =
@@ -95,7 +90,7 @@ function renderKPIs() {
 }
 
 /* =============================================================================
-   SOLO dejamos esta función (porque la usa UI)
+   MODAL
    ============================================================================= */
 function toggleEspecialistas() {
   const modal = document.getElementById('esp-modal');
@@ -108,7 +103,9 @@ function toggleEspecialistas() {
 function updateTS() {
   const now = new Date();
   const el  = document.getElementById('ts');
-  if (el) el.textContent = now.toLocaleTimeString('es-MX', { hour12: false });
+  if (el) {
+    el.textContent = now.toLocaleTimeString('es-MX', { hour12: false });
+  }
 }
 
 /* =============================================================================
@@ -123,25 +120,21 @@ function init() {
 
   renderKPIs();
 
-  /* CHART */
+  /* CHART (solo una vez) */
   initChart(DATA);
 
-  /* OTROS */
+  /* RELOJ */
   updateTS();
   setInterval(updateTS, 1000);
 
   /* 🔥 TIEMPO REAL */
-  setInterval(refreshData, 5000); // cada 5 segundos
-
-  /* SIM */
-  startSim(DATA);
+  setInterval(refreshData, 5000); // cada 5s
 }
 
 /* =============================================================================
-   FIX PARA HTML (onclick)
+   FIX HTML
    ============================================================================= */
 window.toggleEspecialistas = toggleEspecialistas;
-window.togglePausa = () => togglePausa(DATA);
 window.switchChart = (mode) => switchChart(mode, DATA);
 window.selectDay   = (day)  => selectDay(day, DATA);
 
