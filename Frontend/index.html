@@ -17,12 +17,12 @@
 
 <body>
 
-<!-- ── Header ── -->
+<!-- HEADER -->
 <div class="header">
   <div class="logo">
     <div class="logo-mark">
       <svg viewBox="0 0 20 20">
-        <path d="M10 2C5.58 2 2 5.58 2 10s3.58 8 8 8 8-3.58 8-8-3.58-8-8-8zm0 3a3 3 0 110 6 3 3 0 010-6zm0 10.5a6.5 6.5 0 01-4.88-2.19C6.21 12.05 8.02 11.5 10 11.5c1.98 0 3.79.55 4.88 1.81A6.5 6.5 0 0110 15.5z"/>
+        <path d="M10 2C5.58 2 2 5.58 2 10s3.58 8 8 8 8-3.58 8-8-3.58-8-8-8z"/>
       </svg>
     </div>
     <div>
@@ -37,15 +37,11 @@
       <span id="live-label">EN VIVO</span>
     </div>
 
-    <button class="pause-btn" id="pause-btn" onclick="togglePausa()" aria-label="Pausar simulación">
-      &#9208;
-    </button>
-
+    <button class="pause-btn" id="pause-btn" onclick="togglePausa()">⏸</button>
     <div class="timestamp" id="ts">--:--:--</div>
   </div>
 </div>
 
-<!-- ── Main ── -->
 <div class="main">
 
   <!-- KPIs -->
@@ -79,40 +75,74 @@
     </div>
   </div>
 
-  <!-- Gráfica -->
-  <div class="grid3">
-    <div class="panel">
-      <div class="panel-header">
-        <span class="panel-title">Historial de saturación</span>
-        <div style="display:flex; gap:6px;">
-          <button class="chart-tab chart-tab--active" onclick="switchChart('actual')">TIEMPO REAL</button>
-        </div>
-      </div>
-
-      <div id="day-selector" style="display:none;">
-        <button onclick="selectDay(0)">Hoy</button>
-        <button onclick="selectDay(1)">Ayer</button>
-      </div>
-
-      <div class="chart-wrap">
-        <canvas id="histChart"></canvas>
-      </div>
+  <!-- GRÁFICA -->
+  <div class="panel">
+    <div class="panel-header">
+      <span class="panel-title">Historial de saturación</span>
+      <button class="chart-tab chart-tab--active" onclick="switchChart('actual')">
+        TIEMPO REAL
+      </button>
     </div>
 
-    <div class="panel">
-      <div class="panel-header">
-        <span class="panel-title">Saturación por área</span>
-      </div>
-      <div id="areas-sat"></div>
+    <div class="chart-wrap">
+      <canvas id="histChart"></canvas>
     </div>
   </div>
 
-  <!-- Alertas -->
+  <!-- AREAS -->
   <div class="panel">
     <div class="panel-header">
-      <span class="panel-title">Alertas</span>
+      <span class="panel-title">Saturación por área</span>
     </div>
-    <div id="alerts-list"></div>
+    <div id="areas-sat"></div>
+  </div>
+
+  <!-- ALERTAS + IA -->
+  <div class="grid2">
+
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">Alertas</span>
+      </div>
+      <div id="alerts-list"></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">Predicción IA (30 min)</span>
+      </div>
+
+      <div class="ia-section">
+        <div class="ia-valor" id="ia-riesgo-val">--</div>
+        <div id="ia-conf">--</div>
+
+        <div class="ia-pred-row">
+          <span>Ocupación</span>
+          <span id="ia-ocp">--</span>
+        </div>
+
+        <div class="ia-pred-row">
+          <span>Ingresos</span>
+          <span id="ia-ing">--</span>
+        </div>
+
+        <div class="ia-pred-row">
+          <span>Altas</span>
+          <span id="ia-alt">--</span>
+        </div>
+
+        <div id="recoms"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- PERSONAL -->
+  <div class="panel">
+    <div class="panel-header">
+      <span class="panel-title">Personal por turno</span>
+    </div>
+    <div id="personal-grid"></div>
   </div>
 
 </div>

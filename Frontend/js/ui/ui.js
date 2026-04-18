@@ -38,24 +38,36 @@ export function buildAlerts(DATA) {
   }
 }
 
-export function buildPersonal(DATA, toggleEspecialistas) {
+export function buildPersonal(DATA = {}, toggleEspecialistas) {
   const el = document.getElementById('personal-grid');
   if (!el) return;
 
-  el.innerHTML = DATA.personal_detalle.map(p => {
+  const personal = DATA?.personal_detalle || [];
+
+  // 🔒 fallback si no hay datos
+  if (!personal.length) {
+    el.innerHTML = `<div class="empty">Sin datos de personal</div>`;
+    return;
+  }
+
+  el.innerHTML = personal.map(p => {
     const isEsp = p.label === 'Especialistas';
+
     return `
       <div class="personal-card ${isEsp ? 'personal-card--clickable' : ''}"
            ${isEsp ? 'onclick="toggleEspecialistas()"' : ''}>
-        <span class="personal-icon">${p.icon}</span>
-        <div class="personal-val">${p.val}</div>
-        <div class="personal-label">${p.label}</div>
+        <span class="personal-icon">${p.icon || '👤'}</span>
+        <div class="personal-val">${p.val ?? '--'}</div>
+        <div class="personal-label">${p.label || 'N/A'}</div>
         ${isEsp ? '<div class="esp-hint">↑ ver detalle</div>' : ''}
       </div>
     `;
   }).join('');
 
-  if (!document.getElementById('esp-modal')) {
+  // 🔥 modal seguro
+  const especialistas = DATA?.especialistas || [];
+
+  if (!document.getElementById('esp-modal') && especialistas.length) {
     const modal = document.createElement('div');
     modal.id = 'esp-modal';
     modal.className = 'esp-modal';
@@ -67,13 +79,13 @@ export function buildPersonal(DATA, toggleEspecialistas) {
           <button onclick="toggleEspecialistas()">✕</button>
         </div>
         <div>
-          ${DATA.especialistas.map(e => `
+          ${especialistas.map(e => `
             <div class="esp-row">
               <div>
-                <div>${e.nombre}</div>
-                <div>${e.turno}</div>
+                <div>${e.nombre || 'N/A'}</div>
+                <div>${e.turno || '--'}</div>
               </div>
-              <div>${e.cant}</div>
+              <div>${e.cant ?? 0}</div>
             </div>
           `).join('')}
         </div>
