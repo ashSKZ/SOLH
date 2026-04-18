@@ -1,4 +1,4 @@
-// js/services/api.js
+'use strict';
 
 const BASE = "http://localhost:5000/api";
 
@@ -11,7 +11,7 @@ export async function getResumen() {
 
   const d = json.data;
 
-  // 🔥 si no hay datos en DB evita crash
+  // 🔥 evita crash si no hay datos
   if (!d) {
     return {
       pacientes: 0,
@@ -24,28 +24,34 @@ export async function getResumen() {
     };
   }
 
-  const camas_ocupadas = d.camas_ocupadas ?? 0;
-  const camas_disponibles = d.camas_disponibles ?? 0;
-  const total = camas_ocupadas + camas_disponibles || 1;
+  const pacientes_activos =
+    d.pacientes_activos ?? d.camas_ocupadas ?? 0;
 
-  const saturacion = Math.round((camas_ocupadas / total) * 100) || 0;
+  const camas_disponibles = d.camas_disponibles ?? 0;
+
+  const total = pacientes_activos + camas_disponibles || 1;
+
+  const saturacion =
+    d.ocupacion_porcentaje ??
+    Math.round((pacientes_activos / total) * 100) ??
+    0;
 
   return {
-    pacientes: d.pacientes_espera ?? 0,
+    pacientes: pacientes_activos,
     camas: camas_disponibles,
     saturacion,
-
     totalCamas: total,
 
     areas: [
       {
         nombre: d.area || "General",
         pct: saturacion,
-        color: saturacion > 80
-          ? "#ef4444"
-          : saturacion > 60
-          ? "#f59e0b"
-          : "#10b981"
+        color:
+          saturacion > 80
+            ? "#ef4444"
+            : saturacion > 60
+            ? "#f59e0b"
+            : "#10b981"
       }
     ],
 
@@ -55,27 +61,47 @@ export async function getResumen() {
     ],
 
     recoms: [
-      saturacion > 80
+      saturacion > 85
         ? "Activar protocolo de emergencia"
+        : saturacion > 65
+        ? "Alta ocupación, monitorear flujo"
         : "Operación estable"
     ]
   };
 }
 
 /* =============================================================================
-   ALERTAS
+   🔥 ALERTAS (FIX IMPORTANTE)
    ============================================================================= */
 export async function getAlertas() {
   const res = await fetch(`${BASE}/alertas`);
   const json = await res.json();
 
-  if (!json.data) return [];
+  const data = json?.data || [];
 
-  return json.data.map(a => ({
-    msg: a.mensaje,
-    nivel: a.nivel === "alto" ? "high" : "medium",
-    hora: "Ahora"
-  }));
+  return data.map(a => {
+    // 🔥 convertir fecha real
+    const fecha = a.createdAt ? new Date(a.createdAt) : new Date();
+
+    const hora = fecha.toLocaleTimeString("es-MX", {
+      hour: "2-digit",
+      minute: "2-digit"
+    });
+
+    return {
+      msg: a.mensaje ?? "Alerta",
+      
+      // 🔥 normalización de niveles
+      nivel:
+        a.nivel === "critica" || a.nivel === "alto"
+          ? "high"
+          : a.nivel === "media"
+          ? "medium"
+          : "low",
+
+      hora // 👈 ahora sí real, no "Ahora"
+    };
+  });
 }
 
 /* =============================================================================
@@ -89,22 +115,31 @@ export async function getGrafica() {
 
   return {
     labels_12h: data.map(d =>
-      new Date(d.t).toLocaleTimeString('es-MX', { hour12: false })
+      new Date(d.t).toLocaleTimeString("es-MX", {
+        hour12: false
+      })
     ),
 
     historial_dias: [
       {
         data: data.map(d => {
-          const total = (d.pacientes ?? 0) + (d.camas ?? 0) || 1;
-          return Math.round(((d.pacientes ?? 0) / total) * 100);
+          const pacientes = d.pacientes ?? 0;
+          const camas = d.camas ?? 0;
+          const total = pacientes + camas || 1;
+
+          return Math.round((pacientes / total) * 100);
         }),
+
         max: Math.max(...data.map(d => d.pacientes || 0), 0),
         min: Math.min(...data.map(d => d.pacientes || 0), 0),
+
         prom: data.length
           ? Math.round(
-              data.reduce((acc, d) => acc + (d.pacientes || 0), 0) / data.length
+              data.reduce((acc, d) => acc + (d.pacientes || 0), 0) /
+                data.length
             )
           : 0,
+
         label: "Hoy"
       }
     ]
