@@ -140,6 +140,104 @@ async function loadData() {
 }
 
 /* =============================================================================
+   IDENTIFICACION: EXTRACTOR INE
+============================================================================= */
+function initIdentificacionExtractor() {
+  const form = document.getElementById("id-form-extraccion");
+  const inputImagen = document.getElementById("id-imagen-ine");
+  const preview = document.getElementById("id-preview");
+  const previewPlaceholder = document.getElementById("id-preview-placeholder");
+  const btnProcesar = document.getElementById("id-btn-procesar");
+  const estadoGuardado = document.getElementById("id-estado-guardado");
+  const mensaje = document.getElementById("id-mensaje");
+
+  if (!form || !inputImagen || !preview || !previewPlaceholder || !btnProcesar || !estadoGuardado || !mensaje) {
+    return;
+  }
+
+  const campos = {
+    nombre: document.getElementById("id-nombre"),
+    apellido_paterno: document.getElementById("id-apellido-paterno"),
+    apellido_materno: document.getElementById("id-apellido-materno"),
+    curp: document.getElementById("id-curp"),
+    fecha_nacimiento: document.getElementById("id-fecha-nac"),
+    sexo: document.getElementById("id-sexo")
+  };
+
+  const API_URL = "http://localhost:8000/extractor/procesar";
+
+  function actualizarCampos(datos = {}) {
+    Object.entries(campos).forEach(([clave, element]) => {
+      if (!element) return;
+      element.textContent = datos[clave] || "-";
+    });
+  }
+
+  function pintarEstado(texto, clase, detalle = "") {
+    estadoGuardado.textContent = texto;
+    estadoGuardado.className = `id-estado ${clase}`;
+    mensaje.textContent = detalle;
+  }
+
+  inputImagen.addEventListener("change", () => {
+    const archivo = inputImagen.files?.[0];
+    if (!archivo) return;
+    const blobUrl = URL.createObjectURL(archivo);
+    preview.src = blobUrl;
+    preview.style.display = "block";
+    previewPlaceholder.style.display = "none";
+  });
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    const archivo = inputImagen.files?.[0];
+    if (!archivo) {
+      pintarEstado("Selecciona una imagen", "id-estado-error", "No se encontro archivo para procesar.");
+      return;
+    }
+
+    btnProcesar.disabled = true;
+    btnProcesar.textContent = "Procesando...";
+    pintarEstado("Procesando con Gemini", "id-estado-neutro", "Extrayendo datos y guardando en check_in_maestro.xlsx");
+
+    try {
+      const body = new FormData();
+      body.append("imagen", archivo);
+
+      const response = await fetch(API_URL, { method: "POST", body });
+      const result = await response.json();
+
+      if (!response.ok || !result.ok) {
+        throw new Error(result.error || "No se pudo procesar la INE.");
+      }
+
+      actualizarCampos(result.datos || {});
+
+      if (result.guardado_xlsx) {
+        pintarEstado(
+          "Guardado correctamente",
+          "id-estado-ok",
+          result.mensaje || "Registro almacenado en check_in_maestro.xlsx"
+        );
+      } else {
+        pintarEstado(
+          "No se guardo en XLSX",
+          "id-estado-error",
+          result.mensaje || "Se extrajeron datos, pero no se confirmo guardado."
+        );
+      }
+    } catch (error) {
+      actualizarCampos({});
+      pintarEstado("Error de procesamiento", "id-estado-error", error.message);
+    } finally {
+      btnProcesar.disabled = false;
+      btnProcesar.textContent = "Procesar con Gemini";
+    }
+  });
+}
+
+/* =============================================================================
    🔄 REFRESH (cada 5 segundos)
 ============================================================================= */
 async function refreshData() {
@@ -242,4 +340,7 @@ window.selectDay   = (day)  => selectDay(day, DATA);
 /* =============================================================================
    START
 ============================================================================= */
-document.addEventListener('DOMContentLoaded', loadData);
+document.addEventListener('DOMContentLoaded', () => {
+  initIdentificacionExtractor();
+  loadData();
+});

@@ -55,10 +55,6 @@ export async function getResumen() {
       }
     ],
 
-    personal_detalle: [
-      { icon: "👨‍⚕️", val: 10, label: "Médicos" },
-      { icon: "👩‍⚕️", val: 14, label: "Enfermeros" }
-    ],
 
     recoms: [
       saturacion > 85

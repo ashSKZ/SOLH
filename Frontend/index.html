@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SOLH — Monitor de Saturación Hospitalaria</title>
+  <title>SOLH &mdash; Monitor de Saturaci&oacute;n Hospitalaria</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
@@ -15,7 +15,7 @@
 <!-- NAVBAR -->
 <div class="navbar">
   <div class="nav-item active" onclick="showPage('dashboard')">Dashboard</div>
-  <div class="nav-item" onclick="showPage('identificacion')">Identificación</div>
+  <div class="nav-item" onclick="showPage('identificacion')">Identificaci&oacute;n</div>
   <div class="nav-item" onclick="showPage('inventario')">Inventario</div>
   <div class="nav-item" onclick="showPage('nosotros')">Sobre nosotros</div>
 </div>
@@ -32,7 +32,7 @@
       </div>
       <div>
         <div class="logo-text">SOLH</div>
-        <div class="logo-sub">Monitor de Saturación Hospitalaria</div>
+        <div class="logo-sub">Monitor de Saturaci&oacute;n Hospitalaria</div>
       </div>
     </div>
 
@@ -41,7 +41,7 @@
         <div class="live-dot" id="live-dot"></div>
         <span id="live-label">EN VIVO</span>
       </div>
-      <button class="pause-btn" id="pause-btn" onclick="togglePausa()">⏸</button>
+      <button class="pause-btn" id="pause-btn" onclick="togglePausa()">&#9208;</button>
       <div class="timestamp" id="ts">--:--:--</div>
     </div>
   </div>
@@ -59,7 +59,7 @@
         <div class="kpi-value green" id="kpi-camas">--</div>
       </div>
       <div class="kpi-card amber">
-        <div class="kpi-label">Saturación actual</div>
+        <div class="kpi-label">Saturaci&oacute;n actual</div>
         <div class="kpi-value amber" id="kpi-sat">--</div>
       </div>
       <div class="kpi-card purple">
@@ -71,7 +71,7 @@
     <!-- GRÁFICA -->
     <div class="panel">
       <div class="panel-header">
-        <span class="panel-title">Historial de saturación</span>
+        <span class="panel-title">Historial de saturaci&oacute;n</span>
       </div>
       <div class="chart-wrap">
         <canvas id="histChart"></canvas>
@@ -81,7 +81,7 @@
     <!-- AREAS -->
     <div class="panel">
       <div class="panel-header">
-        <span class="panel-title">Saturación por área</span>
+        <span class="panel-title">Saturaci&oacute;n por &aacute;rea</span>
       </div>
       <div id="areas-sat"></div>
     </div>
@@ -98,11 +98,11 @@
 
       <div class="panel">
         <div class="panel-header">
-          <span class="panel-title">Predicción IA</span>
+          <span class="panel-title">Predicci&oacute;n IA</span>
         </div>
         <div class="ia-section">
 
-          <!-- ✅ Cada valor ahora tiene su label visible -->
+          <!-- Cada valor ahora tiene su label visible -->
           <div class="ia-row">
             <span class="ia-label">Nivel de riesgo</span>
             <span id="ia-riesgo-val">--</span>
@@ -114,7 +114,7 @@
           </div>
 
           <div class="ia-row">
-            <span class="ia-label">Ocupación predicha</span>
+            <span class="ia-label">Ocupaci&oacute;n predicha</span>
             <span id="ia-ocp">--</span>
           </div>
 
@@ -134,7 +134,7 @@
     </div>
 
     <!-- PERSONAL DEL TURNO (Dashboard) -->
-    <!-- ✅ ID único: "dashboard-personal-grid" -->
+    <!-- ID único: "dashboard-personal-grid" -->
     <div class="panel">
       <div class="panel-header">
         <span class="panel-title">Personal en turno</span>
@@ -148,12 +148,45 @@
 <!-- ================= IDENTIFICACIÓN ================= -->
 <div class="page" id="page-identificacion">
   <div class="main">
-    <div class="panel">
+    <div class="panel identificacion-panel">
       <div class="panel-header">
-        <span class="panel-title">Identificación de datos</span>
+        <span class="panel-title">Identificacion de datos</span>
       </div>
-      <div style="padding:20px;">
-        Captura y visualización de pacientes.
+      <div class="id-layout">
+        <section class="id-col">
+          <p class="id-subtitle">Adjunta una imagen de INE y procesa con Gemini.</p>
+
+          <form id="id-form-extraccion" class="id-form">
+            <label class="id-label" for="id-imagen-ine">Imagen INE (frente)</label>
+            <input id="id-imagen-ine" name="imagen" type="file" accept="image/*" required>
+
+            <div class="id-preview-wrap">
+              <img id="id-preview" alt="Vista previa de INE">
+              <p id="id-preview-placeholder">La vista previa aparecera aqui.</p>
+            </div>
+
+            <button id="id-btn-procesar" class="id-btn" type="submit">Procesar con Gemini</button>
+          </form>
+        </section>
+
+        <section class="id-col">
+          <p class="id-subtitle">Datos extraidos</p>
+
+          <div class="id-grid-datos">
+            <div class="id-campo"><span>Nombre</span><strong id="id-nombre">-</strong></div>
+            <div class="id-campo"><span>Apellido paterno</span><strong id="id-apellido-paterno">-</strong></div>
+            <div class="id-campo"><span>Apellido materno</span><strong id="id-apellido-materno">-</strong></div>
+            <div class="id-campo"><span>CURP</span><strong id="id-curp">-</strong></div>
+            <div class="id-campo"><span>Fecha nacimiento</span><strong id="id-fecha-nac">-</strong></div>
+            <div class="id-campo"><span>Sexo</span><strong id="id-sexo">-</strong></div>
+          </div>
+
+          <div class="id-status-box">
+            <p class="id-status-title">Estado de guardado XLSX</p>
+            <p id="id-estado-guardado" class="id-estado id-estado-neutro">Sin procesar</p>
+            <p id="id-mensaje" class="id-mensaje"></p>
+          </div>
+        </section>
       </div>
     </div>
   </div>
@@ -167,7 +200,7 @@
       <div class="panel-header">
         <span class="panel-title">Capital humano</span>
       </div>
-      <!-- ✅ ID único: "personal-capital-grid" -->
+      <!-- ID único: "personal-capital-grid" -->
       <div id="personal-capital-grid"></div>
     </div>
 
@@ -186,30 +219,30 @@
   <div class="nosotros-wrap">
 
     <div class="nosotros-hero">
-      <h1>🏥 Equipo SOLH</h1>
-      <p>Somos un equipo enfocado en mejorar la gestión hospitalaria mediante tecnología e inteligencia artificial.</p>
+      <h1>Equipo SOLH</h1>
+      <p>Somos un equipo enfocado en mejorar la gesti&oacute;n hospitalaria mediante tecnolog&iacute;a e inteligencia artificial.</p>
     </div>
 
     <div class="team-grid">
       <div class="team-card">
-        <h3>Tonantzin Ramírez</h3>
-        <p>📱 757 100 9044</p>
-        <p>✉️ tonaramirez2002@gmail.com</p>
+        <h3>Tonantzin Ram&iacute;rez</h3>
+        <p>TEL 757 100 9044</p>
+        <p>MAIL tonaramirez2002@gmail.com</p>
       </div>
       <div class="team-card">
         <h3>Aishlin Samperio</h3>
-        <p>📱 771 267 1373</p>
-        <p>✉️ samperioaishlinn@gmail.com</p>
+        <p>TEL 771 267 1373</p>
+        <p>MAIL samperioaishlinn@gmail.com</p>
       </div>
       <div class="team-card">
-        <h3>Diego Téllez</h3>
-        <p>📱 241 166 9854</p>
-        <p>✉️ diego.telnie.2004@gmail.com</p>
+        <h3>Diego T&eacute;llez</h3>
+        <p>TEL 241 166 9854</p>
+        <p>MAIL diego.telnie.2004@gmail.com</p>
       </div>
       <div class="team-card">
         <h3>Luis Gallegos</h3>
-        <p>📱 246 220 3603</p>
-        <p>✉️ luislg2014.lggp7@gmail.com</p>
+        <p>TEL 246 220 3603</p>
+        <p>MAIL luislg2014.lggp7@gmail.com</p>
       </div>
     </div>
 
@@ -227,7 +260,7 @@ function showPage(name) {
   const map = { dashboard: 0, identificacion: 1, inventario: 2, nosotros: 3 };
   document.querySelectorAll('.nav-item')[map[name]].classList.add('active');
 
-  // ✅ FIX: disparar evento para que main.js cargue el inventario al navegar
+  // FIX: disparar evento para que main.js cargue el inventario al navegar
   if (name === 'inventario') {
     window.dispatchEvent(new CustomEvent('loadInventario'));
   }
