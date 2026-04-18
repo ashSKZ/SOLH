@@ -8,5 +8,6 @@ app.use(express.json());
 
 app.use("/api", require("./routes/dashboardRoutes"));
 app.use("/api/prediccion", require("./routes/prediccionRoutes"));
+app.use("/api/capital", require("./routes/capitalRoutes"));
 
 module.exports = app;
