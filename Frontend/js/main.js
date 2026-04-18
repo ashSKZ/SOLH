@@ -5,7 +5,9 @@ import {
   buildAreas,
   buildAlerts,
   buildPersonal,
-  buildRecoms
+  buildRecoms,
+  buildPersonalCapital,
+  buildMaterialCapital
 } from "./ui/ui.js";
 
 import {
@@ -26,7 +28,15 @@ let DATA = {};
 let PRED = null;
 
 /* =============================================================================
-   🧠 ADAPTADOR IA
+   🔍 DETECTAR INVENTARIO
+============================================================================= */
+function isInventarioPage() {
+  const page = document.getElementById("page-inventario");
+  return page && page.classList.contains("active");
+}
+
+/* =============================================================================
+   🧠 IA
 ============================================================================= */
 function adaptarPrediccion(apiData = []) {
   if (!apiData.length) return null;
@@ -34,123 +44,134 @@ function adaptarPrediccion(apiData = []) {
   const ultima = apiData[0];
 
   return {
-    riesgo: ultima.nivel_riesgo || "medio",
+    riesgo:    ultima.nivel_riesgo        || "medio",
     confianza: Math.round((ultima.probabilidad || 0) * 100),
-    ocupacion: ultima.ocupacion_predicha || 0,
-    recomendacion: ultima.accion || "Sin acción",
-    ingresos: Math.floor(Math.random() * 10) + 5,
-    altas: Math.floor(Math.random() * 5) + 2
+    ocupacion: ultima.ocupacion_predicha  || 0,
+    ingresos:  Math.floor(Math.random() * 10) + 5,
+    altas:     Math.floor(Math.random() * 5)  + 2
   };
 }
 
-/* =============================================================================
-   🌐 FETCH IA
-============================================================================= */
 async function getPrediccion() {
   try {
-    const res = await fetch("http://localhost:5000/api/prediccion");
+    const res  = await fetch("http://localhost:5000/api/prediccion");
     const json = await res.json();
     return adaptarPrediccion(json?.data || []);
-  } catch (err) {
-    console.error("[SOLH] Error IA:", err);
+  } catch {
     return null;
   }
 }
 
-/* =============================================================================
-   🎯 RENDER IA
-============================================================================= */
 function renderPrediccion(p) {
-  const riesgoEl = document.getElementById("ia-riesgo-val");
-  const conf = document.getElementById("ia-conf");
-  const ocp = document.getElementById("ia-ocp");
-  const ing = document.getElementById("ia-ing");
-  const alt = document.getElementById("ia-alt");
+  const set = (id, val) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = val;
+  };
 
-  // 🔥 fallback si no hay datos
   if (!p) {
-    if (riesgoEl) riesgoEl.textContent = "--";
-    if (conf) conf.textContent = "--";
-    if (ocp) ocp.textContent = "--";
-    if (ing) ing.textContent = "--";
-    if (alt) alt.textContent = "--";
+    ["ia-riesgo-val", "ia-conf", "ia-ocp", "ia-ing", "ia-alt"]
+      .forEach(id => set(id, "--"));
     return;
   }
 
-  const colorMap = {
-    alto: "var(--red)",
-    medio: "var(--amber)",
-    bajo: "var(--green)"
-  };
-
-  if (riesgoEl) {
-    riesgoEl.textContent = p.riesgo.toUpperCase();
-    riesgoEl.style.color = colorMap[p.riesgo] || "white";
-  }
-
-  if (conf) conf.textContent = `Confianza: ${p.confianza}%`;
-  if (ocp) ocp.textContent = p.ocupacion + "%";
-  if (ing) ing.textContent = "+" + p.ingresos;
-  if (alt) alt.textContent = "+" + p.altas;
+  set("ia-riesgo-val", p.riesgo.toUpperCase());
+  set("ia-conf",       `Confianza: ${p.confianza}%`);
+  set("ia-ocp",        p.ocupacion + "%");
+  set("ia-ing",        "+" + p.ingresos);
+  set("ia-alt",        "+" + p.altas);
 }
 
 /* =============================================================================
-   🚀 CARGA INICIAL
+   📡 CAPITAL
+============================================================================= */
+async function getCapitalResumen() {
+  try {
+    const res  = await fetch("http://localhost:5000/api/capital/resumen");
+    const json = await res.json();
+    return json.data;
+  } catch {
+    return null;
+  }
+}
+
+// ✅ FIX: ya no verifica isInventarioPage() — se llama solo cuando corresponde
+async function loadInventario() {
+  const data = await getCapitalResumen();
+  if (!data) return;
+
+  // Actualizar datos globales si aplica
+  DATA.personal_total = data.total_personal;
+  if (data.total_camas) DATA.camas = data.total_camas;
+
+  // ✅ Usa los IDs correctos del inventario (no comparten ID con el dashboard)
+  buildPersonalCapital(data);
+  buildMaterialCapital(data);
+
+  renderKPIs();
+}
+
+/* =============================================================================
+   🚀 LOAD INICIAL
 ============================================================================= */
 async function loadData() {
-  try {
-    const [resumen, grafica, alertas] = await Promise.all([
-      getResumen(),
-      getGrafica(),
-      getAlertas()
-    ]);
+  const [resumen, grafica, alertas] = await Promise.all([
+    getResumen(),
+    getGrafica(),
+    getAlertas()
+  ]);
 
-    DATA = {
-      ...(resumen || {}),
-      ...(grafica || {}),
-      alerts: alertas || []
-    };
+  DATA = {
+    ...(resumen || {}),
+    ...(grafica || {}),
+    alerts: alertas || []
+  };
 
-    init();
+  // ✅ FIX: init() ya llama buildPersonal internamente,
+  //         NO lo llamamos de nuevo después de init()
+  init();
 
-    // 🔥 IA inicial aparte
-    PRED = await getPrediccion();
-    renderPrediccion(PRED);
+  PRED = await getPrediccion();
+  renderPrediccion(PRED);
 
-  } catch (err) {
-    console.error('[SOLH] Error backend:', err);
+  // Cargar inventario solo si ya está visible al inicio (caso raro)
+  if (isInventarioPage()) {
+    loadInventario();
   }
 }
 
 /* =============================================================================
-   🔄 REFRESH DATOS
+   🔄 REFRESH (cada 5 segundos)
 ============================================================================= */
 async function refreshData() {
-  try {
-    const [resumen, grafica, alertas] = await Promise.all([
-      getResumen(),
-      getGrafica(),
-      getAlertas()
-    ]);
+  const [resumen, grafica, alertas] = await Promise.all([
+    getResumen(),
+    getGrafica(),
+    getAlertas()
+  ]);
 
-    DATA = {
-      ...(resumen || {}),
-      ...(grafica || {}),
-      alerts: alertas || []
-    };
+  DATA = {
+    ...(resumen || {}),
+    ...(grafica || {}),
+    alerts: alertas || []
+  };
 
-    renderKPIs();
-    buildAreas(DATA);
-    buildAlerts(DATA);
-    updateChart(DATA);
+  renderKPIs();
 
-  } catch (err) {
-    console.error('[SOLH] Error refresh:', err);
+  // ✅ Reconstruir secciones del dashboard
+  buildAreas(DATA);
+  buildAlerts(DATA);
+  buildPersonal(DATA, toggleEspecialistas);
+  buildRecoms(DATA);
+  updateChart(DATA);
+
+  // ✅ Solo refresca inventario si está visible — evita trabajo innecesario
+  if (isInventarioPage()) {
+    loadInventario();
   }
 }
 
 /* =============================================================================
-   🔄 REFRESH IA (SEPARADO 🔥)
+   🔄 REFRESH IA (cada 10 segundos)
 ============================================================================= */
 async function refreshIA() {
   PRED = await getPrediccion();
@@ -161,52 +182,58 @@ async function refreshIA() {
    📊 KPIs
 ============================================================================= */
 function renderKPIs() {
-  document.getElementById("kpi-pac").textContent = DATA.pacientes ?? 0;
-  document.getElementById("kpi-camas").textContent = DATA.camas ?? 0;
-  document.getElementById("kpi-sat").textContent = (DATA.saturacion ?? 0) + "%";
-  document.getElementById("kpi-per").textContent = DATA.personal_total ?? "--";
+  const set = (id, val) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = val;
+  };
+
+  set("kpi-pac",   DATA.pacientes      ?? 0);
+  set("kpi-camas", DATA.camas          ?? 0);
+  set("kpi-sat",   (DATA.saturacion    ?? 0) + "%");
+  set("kpi-per",   DATA.personal_total ?? "--");
 }
 
 /* =============================================================================
-   🧩 MODAL
+   UTIL
 ============================================================================= */
 function toggleEspecialistas() {
   const modal = document.getElementById('esp-modal');
   if (modal) modal.classList.toggle('esp-modal--visible');
 }
 
-/* =============================================================================
-   ⏱ RELOJ
-============================================================================= */
 function updateTS() {
   const el = document.getElementById('ts');
-  if (!el) return;
-
-  el.textContent = new Date().toLocaleTimeString('es-MX', { hour12: false });
+  if (el) {
+    el.textContent = new Date().toLocaleTimeString('es-MX', { hour12: false });
+  }
 }
 
 /* =============================================================================
-   🔥 INIT
+   INIT
 ============================================================================= */
 function init() {
   buildAreas(DATA);
   buildAlerts(DATA);
-  buildPersonal(DATA, toggleEspecialistas);
+  buildPersonal(DATA, toggleEspecialistas); // ✅ solo se llama aquí
   buildRecoms(DATA);
 
   renderKPIs();
   initChart(DATA);
 
   updateTS();
-  setInterval(updateTS, 1000);
-
-  // 🔥 REFRESH separado (PRO)
-  setInterval(refreshData, 5000); // datos
-  setInterval(refreshIA, 10000);  // IA
+  setInterval(updateTS,    1000);
+  setInterval(refreshData, 5000);
+  setInterval(refreshIA,  10000);
 }
 
 /* =============================================================================
-   FIX HTML
+   ✅ FIX: escuchar el evento de navegación al inventario
+   (disparado por showPage('inventario') en el HTML)
+============================================================================= */
+window.addEventListener('loadInventario', loadInventario);
+
+/* =============================================================================
+   EXPONER FUNCIONES GLOBALES AL HTML
 ============================================================================= */
 window.toggleEspecialistas = toggleEspecialistas;
 window.switchChart = (mode) => switchChart(mode, DATA);

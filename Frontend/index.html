@@ -5,13 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SOLH — Monitor de Saturación Hospitalaria</title>
 
-  <!-- Fuentes -->
   <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-
-  <!-- Chart.js -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
-
-  <!-- Estilos -->
   <link rel="stylesheet" href="css/dashboard.css">
 </head>
 
@@ -28,141 +23,126 @@
 <!-- ================= DASHBOARD ================= -->
 <div class="page active" id="page-dashboard">
 
-<!-- (TODO TU DASHBOARD EXACTO — NO MODIFICADO) -->
-<!-- HEADER -->
-<div class="header">
-  <div class="logo">
-    <div class="logo-mark">
-      <svg viewBox="0 0 20 20">
-        <path d="M10 2C5.58 2 2 5.58 2 10s3.58 8 8 8 8-3.58 8-8-3.58-8-8-8z"/>
-      </svg>
-    </div>
-    <div>
-      <div class="logo-text">SOLH</div>
-      <div class="logo-sub">Monitor de Saturación Hospitalaria</div>
-    </div>
-  </div>
-
-  <div class="header-right">
-    <div class="live-badge">
-      <div class="live-dot" id="live-dot"></div>
-      <span id="live-label">EN VIVO</span>
+  <div class="header">
+    <div class="logo">
+      <div class="logo-mark">
+        <svg viewBox="0 0 20 20">
+          <path d="M10 2C5.58 2 2 5.58 2 10s3.58 8 8 8 8-3.58 8-8-3.58-8-8-8z"/>
+        </svg>
+      </div>
+      <div>
+        <div class="logo-text">SOLH</div>
+        <div class="logo-sub">Monitor de Saturación Hospitalaria</div>
+      </div>
     </div>
 
-    <button class="pause-btn" id="pause-btn" onclick="togglePausa()">⏸</button>
-    <div class="timestamp" id="ts">--:--:--</div>
-  </div>
-</div>
-
-<div class="main">
-
-  <!-- KPIs -->
-  <div class="kpi-grid">
-    <div class="kpi-card blue">
-      <div class="kpi-label">Pacientes activos</div>
-      <div class="kpi-value blue" id="kpi-pac">--</div>
-      <div class="kpi-sub">Hospitalizados actualmente</div>
-      <div class="kpi-delta delta-up" id="d-pac">--</div>
-    </div>
-
-    <div class="kpi-card green">
-      <div class="kpi-label">Camas disponibles</div>
-      <div class="kpi-value green" id="kpi-camas">--</div>
-      <div class="kpi-sub">De 50 camas totales</div>
-      <div class="kpi-delta delta-down" id="d-camas">--</div>
-    </div>
-
-    <div class="kpi-card amber">
-      <div class="kpi-label">Saturación actual</div>
-      <div class="kpi-value amber" id="kpi-sat">--</div>
-      <div class="kpi-sub">Nivel actual</div>
-      <div class="kpi-delta delta-warn" id="d-sat">--</div>
-    </div>
-
-    <div class="kpi-card purple">
-      <div class="kpi-label">Personal disponible</div>
-      <div class="kpi-value purple" id="kpi-per">--</div>
-      <div class="kpi-sub">Médicos + enfermeros</div>
-      <div class="kpi-delta delta-up" id="d-per">--</div>
+    <div class="header-right">
+      <div class="live-badge">
+        <div class="live-dot" id="live-dot"></div>
+        <span id="live-label">EN VIVO</span>
+      </div>
+      <button class="pause-btn" id="pause-btn" onclick="togglePausa()">⏸</button>
+      <div class="timestamp" id="ts">--:--:--</div>
     </div>
   </div>
 
-  <!-- GRÁFICA -->
-  <div class="panel">
-    <div class="panel-header">
-      <span class="panel-title">Historial de saturación</span>
-      <button class="chart-tab chart-tab--active" onclick="switchChart('actual')">
-        TIEMPO REAL
-      </button>
+  <div class="main">
+
+    <!-- KPIs -->
+    <div class="kpi-grid">
+      <div class="kpi-card blue">
+        <div class="kpi-label">Pacientes activos</div>
+        <div class="kpi-value blue" id="kpi-pac">--</div>
+      </div>
+      <div class="kpi-card green">
+        <div class="kpi-label">Camas disponibles</div>
+        <div class="kpi-value green" id="kpi-camas">--</div>
+      </div>
+      <div class="kpi-card amber">
+        <div class="kpi-label">Saturación actual</div>
+        <div class="kpi-value amber" id="kpi-sat">--</div>
+      </div>
+      <div class="kpi-card purple">
+        <div class="kpi-label">Personal disponible</div>
+        <div class="kpi-value purple" id="kpi-per">--</div>
+      </div>
     </div>
 
-    <div class="chart-wrap">
-      <canvas id="histChart"></canvas>
-    </div>
-  </div>
-
-  <!-- AREAS -->
-  <div class="panel">
-    <div class="panel-header">
-      <span class="panel-title">Saturación por área</span>
-    </div>
-    <div id="areas-sat"></div>
-  </div>
-
-  <!-- ALERTAS + IA -->
-  <div class="grid2">
-
+    <!-- GRÁFICA -->
     <div class="panel">
       <div class="panel-header">
-        <span class="panel-title">Alertas</span>
+        <span class="panel-title">Historial de saturación</span>
       </div>
-      <div id="alerts-list"></div>
+      <div class="chart-wrap">
+        <canvas id="histChart"></canvas>
+      </div>
     </div>
 
+    <!-- AREAS -->
     <div class="panel">
       <div class="panel-header">
-        <span class="panel-title">Predicción IA (30 min)</span>
+        <span class="panel-title">Saturación por área</span>
+      </div>
+      <div id="areas-sat"></div>
+    </div>
+
+    <!-- ALERTAS + IA -->
+    <div class="grid2">
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Alertas</span>
+          <span id="alert-count"></span>
+        </div>
+        <div id="alerts-list"></div>
       </div>
 
-      <div class="ia-section">
-        <div class="ia-valor" id="ia-riesgo-val">--</div>
-        <div id="ia-conf">--</div>
-
-        <div class="ia-pred-row">
-          <span>Ocupación</span>
-          <span id="ia-ocp">--</span>
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Predicción IA</span>
         </div>
+        <div class="ia-section">
 
-        <div class="ia-pred-row">
-          <span>Ingresos</span>
-          <span id="ia-ing">--</span>
+          <!-- ✅ Cada valor ahora tiene su label visible -->
+          <div class="ia-row">
+            <span class="ia-label">Nivel de riesgo</span>
+            <span id="ia-riesgo-val">--</span>
+          </div>
+
+          <div class="ia-row">
+            <span class="ia-label">Confianza</span>
+            <span id="ia-conf">--</span>
+          </div>
+
+          <div class="ia-row">
+            <span class="ia-label">Ocupación predicha</span>
+            <span id="ia-ocp">--</span>
+          </div>
+
+          <div class="ia-row">
+            <span class="ia-label">Ingresos estimados</span>
+            <span id="ia-ing">--</span>
+          </div>
+
+          <div class="ia-row">
+            <span class="ia-label">Altas estimadas</span>
+            <span id="ia-alt">--</span>
+          </div>
+
+          <div id="recoms"></div>
         </div>
-
-        <div class="ia-pred-row">
-          <span>Altas</span>
-          <span id="ia-alt">--</span>
-        </div>
-
-        <div id="recoms"></div>
       </div>
     </div>
 
-  </div>
-
-  <!-- PERSONAL -->
-  <div class="panel">
-    <div class="panel-header">
-      <span class="panel-title">Personal por turno</span>
+    <!-- PERSONAL DEL TURNO (Dashboard) -->
+    <!-- ✅ ID único: "dashboard-personal-grid" -->
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">Personal en turno</span>
+      </div>
+      <div id="dashboard-personal-grid"></div>
     </div>
-    <div id="personal-grid"></div>
+
   </div>
-
-</div>
-
-<div class="footer">
-  SOLH v1.0 — Hackatón — Backend conectado
-</div>
-
 </div>
 
 <!-- ================= IDENTIFICACIÓN ================= -->
@@ -173,7 +153,7 @@
         <span class="panel-title">Identificación de datos</span>
       </div>
       <div style="padding:20px;">
-        Aquí puedes capturar o visualizar datos de pacientes, registros o entradas del sistema.
+        Captura y visualización de pacientes.
       </div>
     </div>
   </div>
@@ -181,106 +161,62 @@
 
 <!-- ================= INVENTARIO ================= -->
 <div class="page" id="page-inventario">
-  <div class="main">
+  <div class="main" id="capital-container">
+
     <div class="panel">
       <div class="panel-header">
-        <span class="panel-title">Inventario</span>
+        <span class="panel-title">Capital humano</span>
       </div>
-      <div style="padding:20px;">Contenido próximamente</div>
+      <!-- ✅ ID único: "personal-capital-grid" -->
+      <div id="personal-capital-grid"></div>
     </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">Capital material</span>
+      </div>
+      <div id="material-grid"></div>
+    </div>
+
   </div>
 </div>
 
-<!-- ================= SOBRE NOSOTROS (YA COMPLETO) ================= -->
+<!-- ================= SOBRE NOSOTROS ================= -->
 <div class="page" id="page-nosotros">
   <div class="nosotros-wrap">
 
     <div class="nosotros-hero">
-      <div class="nosotros-hero-titulo">🏥 Equipo SOLH</div>
-      <p class="nosotros-hero-desc">
-        Somos un equipo de cuatro estudiantes apasionados por la tecnología y la salud pública. Desarrollamos SOLH durante el Hackatón 2025 con el objetivo de brindar a los hospitales una herramienta moderna de monitoreo en tiempo real que ayude a reducir la saturación hospitalaria, optimizar la gestión de recursos y anticipar situaciones críticas mediante inteligencia artificial.
-      </p>
+      <h1>🏥 Equipo SOLH</h1>
+      <p>Somos un equipo enfocado en mejorar la gestión hospitalaria mediante tecnología e inteligencia artificial.</p>
     </div>
 
-    <div>
-      <div class="nosotros-subtitulo">Integrantes del equipo</div>
-      <div class="team-grid">
-
-        <div class="team-card">
-          <div class="team-card-header">
-            <div class="team-avatar">👩‍💻</div>
-            <div class="team-nombre">Tonantzin Ramírez Tapia</div>
-          </div>
-          <div class="team-contacto">
-            <div class="team-dato">
-              <span class="team-dato-icon">📱</span>
-              <span>757 100 9044</span>
-            </div>
-            <div class="team-dato">
-              <span class="team-dato-icon">✉️</span>
-              <a href="mailto:tonaramirez2002@gmail.com">tonaramirez2002@gmail.com</a>
-            </div>
-          </div>
-        </div>
-
-        <div class="team-card">
-          <div class="team-card-header">
-            <div class="team-avatar">👩‍💻</div>
-            <div class="team-nombre">Aishlin Ivette Samperio Ortíz</div>
-          </div>
-          <div class="team-contacto">
-            <div class="team-dato">
-              <span class="team-dato-icon">📱</span>
-              <span>771 267 1373</span>
-            </div>
-            <div class="team-dato">
-              <span class="team-dato-icon">✉️</span>
-              <a href="mailto:samperioaishlinn@gmail.com">samperioaishlinn@gmail.com</a>
-            </div>
-          </div>
-        </div>
-
-        <div class="team-card">
-          <div class="team-card-header">
-            <div class="team-avatar">👨‍💻</div>
-            <div class="team-nombre">Diego Téllez Nieto</div>
-          </div>
-          <div class="team-contacto">
-            <div class="team-dato">
-              <span class="team-dato-icon">📱</span>
-              <span>241 166 9854</span>
-            </div>
-            <div class="team-dato">
-              <span class="team-dato-icon">✉️</span>
-              <a href="mailto:diego.telnie.2004@gmail.com">diego.telnie.2004@gmail.com</a>
-            </div>
-          </div>
-        </div>
-
-        <div class="team-card">
-          <div class="team-card-header">
-            <div class="team-avatar">👨‍💻</div>
-            <div class="team-nombre">Luis Gerardo Gallegos Pérez</div>
-          </div>
-          <div class="team-contacto">
-            <div class="team-dato">
-              <span class="team-dato-icon">📱</span>
-              <span>246 220 3603</span>
-            </div>
-            <div class="team-dato">
-              <span class="team-dato-icon">✉️</span>
-              <a href="mailto:luislg2014.lggp7@gmail.com">luislg2014.lggp7@gmail.com</a>
-            </div>
-          </div>
-        </div>
- 
+    <div class="team-grid">
+      <div class="team-card">
+        <h3>Tonantzin Ramírez</h3>
+        <p>📱 757 100 9044</p>
+        <p>✉️ tonaramirez2002@gmail.com</p>
+      </div>
+      <div class="team-card">
+        <h3>Aishlin Samperio</h3>
+        <p>📱 771 267 1373</p>
+        <p>✉️ samperioaishlinn@gmail.com</p>
+      </div>
+      <div class="team-card">
+        <h3>Diego Téllez</h3>
+        <p>📱 241 166 9854</p>
+        <p>✉️ diego.telnie.2004@gmail.com</p>
+      </div>
+      <div class="team-card">
+        <h3>Luis Gallegos</h3>
+        <p>📱 246 220 3603</p>
+        <p>✉️ luislg2014.lggp7@gmail.com</p>
       </div>
     </div>
- 
+
   </div>
 </div>
 
-<!-- NAV LOGIC -->
+<!-- NAV SCRIPT -->
 <script>
 function showPage(name) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -288,14 +224,13 @@ function showPage(name) {
 
   document.getElementById('page-' + name).classList.add('active');
 
-  const map = {
-    dashboard: 0,
-    identificacion: 1,
-    inventario: 2,
-    nosotros: 3
-  };
-
+  const map = { dashboard: 0, identificacion: 1, inventario: 2, nosotros: 3 };
   document.querySelectorAll('.nav-item')[map[name]].classList.add('active');
+
+  // ✅ FIX: disparar evento para que main.js cargue el inventario al navegar
+  if (name === 'inventario') {
+    window.dispatchEvent(new CustomEvent('loadInventario'));
+  }
 }
 </script>
 
