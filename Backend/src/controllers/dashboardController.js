@@ -7,24 +7,31 @@ const getResumen = async (req, res) => {
 };
 
 const generarSimulacion = async (req, res) => {
+  try {
+    const data = req.body;
 
-  const pacientes = Math.floor(Math.random() * 50);
-  const camas = Math.floor(Math.random() * 20);
+    // Mapear campos del simulador a tu modelo
+    const pacientes = data.pacientes_espera || 0;
+    const camas = data.camas_disponibles ?? (data.camas_totales - data.camas_ocupadas);
 
-  let nivel = "bajo";
+    let nivel = "bajo";
+    if (pacientes > 35 || camas <= 5) nivel = "alto";
+    else if (pacientes > 20 || camas <= 10) nivel = "medio";
 
-  if (pacientes > 35 || camas <= 5) nivel = "alto";
-  else if (pacientes > 20 || camas <= 10) nivel = "medio";
+    const nuevo = await Flujo.create({
+      area: data.area,
+      pacientes_espera: pacientes,
+      pacientes_atendidos: data.pacientes_atendidos,
+      camas_disponibles: camas,
+      camas_ocupadas: data.camas_ocupadas,
+      nivel
+    });
 
-  const nuevo = await Flujo.create({
-    pacientes_espera: pacientes,
-    pacientes_atendidos: Math.floor(Math.random() * 100),
-    camas_disponibles: camas,
-    camas_ocupadas: 50 - camas,
-    nivel
-  });
-
-  res.json(nuevo);
+    res.json(nuevo);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error al guardar simulación" });
+  }
 };
 
 const getGrafica = async (req, res) => {
