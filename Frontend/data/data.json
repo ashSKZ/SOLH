@@ -1,0 +1,64 @@
+{
+  "totalCamas": 180,
+
+  "pacientes": { "total": 142, "delta": 8 },
+  "camas":     { "disponibles": 38, "delta": -5 },
+  "saturacion":{ "porcentaje": 79, "nivel": "medio-alto", "delta": 3 },
+  "personal":  { "total": 47 },
+
+  "areas": [
+    { "nombre": "Urgencias",        "pct": 94, "color": "#ef4444" },
+    { "nombre": "UCI",              "pct": 88, "color": "#f59e0b" },
+    { "nombre": "Hospitalización",  "pct": 72, "color": "#f59e0b" },
+    { "nombre": "Pediatría",        "pct": 55, "color": "#10b981" },
+    { "nombre": "Cirugía",          "pct": 61, "color": "#10b981" },
+    { "nombre": "Consulta Externa", "pct": 40, "color": "#00d4ff" }
+  ],
+
+  "alerts": [
+    { "nivel": "high",   "msg": "Urgencias al 94% de capacidad. Riesgo de desbordamiento.",   "hora": "hace 4 min"  },
+    { "nivel": "medium", "msg": "UCI con 3 camas críticas disponibles. Monitorear ingresos.",  "hora": "hace 12 min" },
+    { "nivel": "medium", "msg": "Predicción IA: posible aumento de ingresos en 30 minutos.",   "hora": "hace 18 min" },
+    { "nivel": "low",    "msg": "Turno nocturno sin incidencias en Pediatría.",                "hora": "hace 25 min" }
+  ],
+
+  "personal_detalle": [
+    { "label": "Médicos",       "val": 12, "icon": "🩺" },
+    { "label": "Enfermeros",    "val": 28, "icon": "💉" },
+    { "label": "Especialistas", "val": 7,  "icon": "🔬" }
+  ],
+
+  "especialistas": [
+    { "nombre": "Cardiología",   "turno": "Matutino",   "cant": 2 },
+    { "nombre": "Neurología",    "turno": "Matutino",   "cant": 1 },
+    { "nombre": "Traumatología", "turno": "Vespertino", "cant": 2 },
+    { "nombre": "Pediatría",     "turno": "Nocturno",   "cant": 1 },
+    { "nombre": "Oncología",     "turno": "Matutino",   "cant": 1 }
+  ],
+
+  "recoms": [
+    "Preparar 2 camas adicionales en Urgencias",
+    "Activar protocolo de alta temprana UCI",
+    "Notificar al equipo de guardia nocturna"
+  ],
+
+  "prediccion": {
+    "riesgo": "MEDIO",
+    "confianza": 87,
+    "ocupacion_estimada": 84,
+    "ingresos_proyectados": 11,
+    "altas_esperadas": 5
+  },
+
+  "historial_dias": [
+    { "label": "Hoy",         "data": [52,58,63,67,71,74,72,76,79,82,79,79], "max": 82, "min": 52, "prom": 71 },
+    { "label": "Ayer",        "data": [48,51,55,60,65,70,74,78,80,77,73,69], "max": 80, "min": 48, "prom": 67 },
+    { "label": "Hace 2 días", "data": [60,63,68,72,75,78,82,85,83,80,76,72], "max": 85, "min": 60, "prom": 74 },
+    { "label": "Hace 3 días", "data": [45,48,52,55,58,62,65,68,66,63,59,55], "max": 68, "min": 45, "prom": 58 },
+    { "label": "Hace 4 días", "data": [70,74,78,82,86,89,91,88,85,81,77,73], "max": 91, "min": 70, "prom": 81 },
+    { "label": "Hace 5 días", "data": [55,57,60,62,65,67,70,72,70,67,64,61], "max": 72, "min": 55, "prom": 64 },
+    { "label": "Hace 6 días", "data": [40,44,48,52,56,59,62,60,57,54,50,47], "max": 62, "min": 40, "prom": 52 }
+  ],
+
+  "labels_12h": ["12:00","13:00","14:00","15:00","16:00","17:00","18:00","19:00","20:00","21:00","22:00","23:00"]
+}

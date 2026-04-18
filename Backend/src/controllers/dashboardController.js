@@ -4,7 +4,10 @@ const Flujo = require("../models/Flujo");
 const getResumen = async (req, res) => {
   const ultimo = await Flujo.findOne().sort({ createdAt: -1 });
 
-  res.json(ultimo);
+  res.json({
+    success: true,
+    data: ultimo
+  });
 };
 
 const generarSimulacion = async (req, res) => {
@@ -44,13 +47,50 @@ const generarSimulacion = async (req, res) => {
 const getGrafica = async (req, res) => {
   const datos = await Flujo.find()
     .sort({ createdAt: -1 })
-    .limit(10);
+    .limit(20);
 
-  res.json(datos.reverse());
+  const formatted = datos.reverse().map(d => ({
+    t: d.createdAt,
+    pacientes: d.pacientes_espera,
+    camas: d.camas_disponibles
+  }));
+
+  res.json({
+    success: true,
+    data: formatted
+  });
+};
+
+const getAlertas = async (req, res) => {
+  const ultimo = await Flujo.findOne().sort({ createdAt: -1 });
+
+  const alertas = [];
+
+  if (!ultimo) {
+    return res.json({ success: true, data: alertas });
+  }
+
+  if (ultimo.camas_disponibles <= 5) {
+    alertas.push({ mensaje: "Camas críticas", nivel: "alto" });
+  }
+
+  if (ultimo.pacientes_espera > 30) {
+    alertas.push({ mensaje: "Alta demanda de pacientes", nivel: "medio" });
+  }
+
+  if (ultimo.nivel_ia === "alto") {
+    alertas.push({ mensaje: "Riesgo alto detectado por IA", nivel: "alto" });
+  }
+
+  res.json({
+    success: true,
+    data: alertas
+  });
 };
 
 module.exports = {
   getResumen,
   generarSimulacion,
-  getGrafica
+  getGrafica,
+  getAlertas
 };
