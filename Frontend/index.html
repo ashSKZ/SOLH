@@ -17,6 +17,18 @@
 
 <body>
 
+<!-- NAVBAR -->
+<div class="navbar">
+  <div class="nav-item active" onclick="showPage('dashboard')">Dashboard</div>
+  <div class="nav-item" onclick="showPage('identificacion')">Identificación</div>
+  <div class="nav-item" onclick="showPage('inventario')">Inventario</div>
+  <div class="nav-item" onclick="showPage('nosotros')">Sobre nosotros</div>
+</div>
+
+<!-- ================= DASHBOARD ================= -->
+<div class="page active" id="page-dashboard">
+
+<!-- (TODO TU DASHBOARD EXACTO — NO MODIFICADO) -->
 <!-- HEADER -->
 <div class="header">
   <div class="logo">
@@ -150,6 +162,142 @@
 <div class="footer">
   SOLH v1.0 — Hackatón — Backend conectado
 </div>
+
+</div>
+
+<!-- ================= IDENTIFICACIÓN ================= -->
+<div class="page" id="page-identificacion">
+  <div class="main">
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">Identificación de datos</span>
+      </div>
+      <div style="padding:20px;">
+        Aquí puedes capturar o visualizar datos de pacientes, registros o entradas del sistema.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= INVENTARIO ================= -->
+<div class="page" id="page-inventario">
+  <div class="main">
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">Inventario</span>
+      </div>
+      <div style="padding:20px;">Contenido próximamente</div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= SOBRE NOSOTROS (YA COMPLETO) ================= -->
+<div class="page" id="page-nosotros">
+  <div class="nosotros-wrap">
+
+    <div class="nosotros-hero">
+      <div class="nosotros-hero-titulo">🏥 Equipo SOLH</div>
+      <p class="nosotros-hero-desc">
+        Somos un equipo de cuatro estudiantes apasionados por la tecnología y la salud pública. Desarrollamos SOLH durante el Hackatón 2025 con el objetivo de brindar a los hospitales una herramienta moderna de monitoreo en tiempo real que ayude a reducir la saturación hospitalaria, optimizar la gestión de recursos y anticipar situaciones críticas mediante inteligencia artificial.
+      </p>
+    </div>
+
+    <div>
+      <div class="nosotros-subtitulo">Integrantes del equipo</div>
+      <div class="team-grid">
+
+        <div class="team-card">
+          <div class="team-card-header">
+            <div class="team-avatar">👩‍💻</div>
+            <div class="team-nombre">Tonantzin Ramírez Tapia</div>
+          </div>
+          <div class="team-contacto">
+            <div class="team-dato">
+              <span class="team-dato-icon">📱</span>
+              <span>757 100 9044</span>
+            </div>
+            <div class="team-dato">
+              <span class="team-dato-icon">✉️</span>
+              <a href="mailto:tonaramirez2002@gmail.com">tonaramirez2002@gmail.com</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="team-card">
+          <div class="team-card-header">
+            <div class="team-avatar">👩‍💻</div>
+            <div class="team-nombre">Aishlin Ivette Samperio Ortíz</div>
+          </div>
+          <div class="team-contacto">
+            <div class="team-dato">
+              <span class="team-dato-icon">📱</span>
+              <span>771 267 1373</span>
+            </div>
+            <div class="team-dato">
+              <span class="team-dato-icon">✉️</span>
+              <a href="mailto:samperioaishlinn@gmail.com">samperioaishlinn@gmail.com</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="team-card">
+          <div class="team-card-header">
+            <div class="team-avatar">👨‍💻</div>
+            <div class="team-nombre">Diego Téllez Nieto</div>
+          </div>
+          <div class="team-contacto">
+            <div class="team-dato">
+              <span class="team-dato-icon">📱</span>
+              <span>241 166 9854</span>
+            </div>
+            <div class="team-dato">
+              <span class="team-dato-icon">✉️</span>
+              <a href="mailto:diego.telnie.2004@gmail.com">diego.telnie.2004@gmail.com</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="team-card">
+          <div class="team-card-header">
+            <div class="team-avatar">👨‍💻</div>
+            <div class="team-nombre">Luis Gerardo Gallegos Pérez</div>
+          </div>
+          <div class="team-contacto">
+            <div class="team-dato">
+              <span class="team-dato-icon">📱</span>
+              <span>246 220 3603</span>
+            </div>
+            <div class="team-dato">
+              <span class="team-dato-icon">✉️</span>
+              <a href="mailto:luislg2014.lggp7@gmail.com">luislg2014.lggp7@gmail.com</a>
+            </div>
+          </div>
+        </div>
+ 
+      </div>
+    </div>
+ 
+  </div>
+</div>
+
+<!-- NAV LOGIC -->
+<script>
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+  document.getElementById('page-' + name).classList.add('active');
+
+  const map = {
+    dashboard: 0,
+    identificacion: 1,
+    inventario: 2,
+    nosotros: 3
+  };
+
+  document.querySelectorAll('.nav-item')[map[name]].classList.add('active');
+}
+</script>
 
 <script type="module" src="./js/main.js"></script>
 
