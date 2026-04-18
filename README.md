@@ -34,7 +34,6 @@ Crear `Extractor de datos/.env` con:
 GOOGLE_API_KEY=TU_API_KEY_AQUI
 ```
 
-> Nota: No subas tu `.env` al repositorio.
 
 ## 4) Dependencias del extractor
 
