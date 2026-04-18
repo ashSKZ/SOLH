@@ -43,10 +43,22 @@ function adaptarPrediccion(apiData = []) {
 
   const ultima = apiData[0];
 
+  // ✅ FIX: usar ?? en lugar de || para que 0 sea un valor válido,
+  //         y loguear lo que llega del API para diagnóstico
+  console.log("[IA] datos crudos del API:", ultima);
+
+  const confianza = ultima.probabilidad != null
+    ? Math.round(ultima.probabilidad * 100)
+    : null;
+
+  const ocupacion = ultima.ocupacion_predicha ?? null;
+
+  console.log("[IA] confianza calculada:", confianza, "| ocupacion:", ocupacion);
+
   return {
-    riesgo:    ultima.nivel_riesgo        || "medio",
-    confianza: Math.round((ultima.probabilidad || 0) * 100),
-    ocupacion: ultima.ocupacion_predicha  || 0,
+    riesgo:    ultima.nivel_riesgo   ?? "medio",
+    confianza: confianza             ?? 0,
+    ocupacion: ocupacion             ?? 0,
     ingresos:  Math.floor(Math.random() * 10) + 5,
     altas:     Math.floor(Math.random() * 5)  + 2
   };
@@ -56,8 +68,13 @@ async function getPrediccion() {
   try {
     const res  = await fetch("http://localhost:5000/api/prediccion");
     const json = await res.json();
+
+    // ✅ Log para ver la respuesta completa del API
+    console.log("[IA] respuesta completa del API:", json);
+
     return adaptarPrediccion(json?.data || []);
-  } catch {
+  } catch (err) {
+    console.warn("[IA] error al obtener prediccion:", err);
     return null;
   }
 }
@@ -74,11 +91,17 @@ function renderPrediccion(p) {
     return;
   }
 
-  set("ia-riesgo-val", p.riesgo.toUpperCase());
-  set("ia-conf",       `Confianza: ${p.confianza}%`);
-  set("ia-ocp",        p.ocupacion + "%");
-  set("ia-ing",        "+" + p.ingresos);
-  set("ia-alt",        "+" + p.altas);
+  // ✅ FIX: colorear el nivel de riesgo según valor
+  const riesgoEl = document.getElementById("ia-riesgo-val");
+  if (riesgoEl) {
+    riesgoEl.textContent = p.riesgo.toUpperCase();
+    riesgoEl.className = `ia-val-${p.riesgo.toLowerCase()}`;
+  }
+
+  set("ia-conf", `${p.confianza}%`);
+  set("ia-ocp",  `${p.ocupacion}%`);
+  set("ia-ing",  "+" + p.ingresos);
+  set("ia-alt",  "+" + p.altas);
 }
 
 /* =============================================================================
@@ -94,16 +117,13 @@ async function getCapitalResumen() {
   }
 }
 
-// ✅ FIX: ya no verifica isInventarioPage() — se llama solo cuando corresponde
 async function loadInventario() {
   const data = await getCapitalResumen();
   if (!data) return;
 
-  // Actualizar datos globales si aplica
   DATA.personal_total = data.total_personal;
   if (data.total_camas) DATA.camas = data.total_camas;
 
-  // ✅ Usa los IDs correctos del inventario (no comparten ID con el dashboard)
   buildPersonalCapital(data);
   buildMaterialCapital(data);
 
@@ -126,14 +146,17 @@ async function loadData() {
     alerts: alertas || []
   };
 
-  // ✅ FIX: init() ya llama buildPersonal internamente,
-  //         NO lo llamamos de nuevo después de init()
+  // ✅ FIX: obtener personal_total desde capital para que el KPI arranque con dato
+  const capital = await getCapitalResumen();
+  if (capital?.total_personal != null) {
+    DATA.personal_total = capital.total_personal;
+  }
+
   init();
 
   PRED = await getPrediccion();
   renderPrediccion(PRED);
 
-  // Cargar inventario solo si ya está visible al inicio (caso raro)
   if (isInventarioPage()) {
     loadInventario();
   }
@@ -253,16 +276,20 @@ async function refreshData() {
     alerts: alertas || []
   };
 
+  // ✅ FIX: refrescar personal_total desde capital para mantener el KPI actualizado
+  const capital = await getCapitalResumen();
+  if (capital?.total_personal != null) {
+    DATA.personal_total = capital.total_personal;
+  }
+
   renderKPIs();
 
-  // ✅ Reconstruir secciones del dashboard
   buildAreas(DATA);
   buildAlerts(DATA);
   buildPersonal(DATA, toggleEspecialistas);
   buildRecoms(DATA);
   updateChart(DATA);
 
-  // ✅ Solo refresca inventario si está visible — evita trabajo innecesario
   if (isInventarioPage()) {
     loadInventario();
   }
@@ -312,7 +339,7 @@ function updateTS() {
 function init() {
   buildAreas(DATA);
   buildAlerts(DATA);
-  buildPersonal(DATA, toggleEspecialistas); // ✅ solo se llama aquí
+  buildPersonal(DATA, toggleEspecialistas);
   buildRecoms(DATA);
 
   renderKPIs();
@@ -326,7 +353,6 @@ function init() {
 
 /* =============================================================================
    ✅ FIX: escuchar el evento de navegación al inventario
-   (disparado por showPage('inventario') en el HTML)
 ============================================================================= */
 window.addEventListener('loadInventario', loadInventario);
 

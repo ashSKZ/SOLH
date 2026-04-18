@@ -268,19 +268,70 @@ body {
 /* =====================================================================
    PREDICCIÓN IA
    ===================================================================== */
-.ia-section    { display: flex; flex-direction: column; gap: 12px; }
+.ia-section { display: flex; flex-direction: column; gap: 0; }
+
+/* Filas label + valor */
+.ia-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.15s;
+}
+.ia-row:first-child { border-radius: 8px 8px 0 0; }
+.ia-row:last-of-type { border-bottom: none; border-radius: 0 0 8px 8px; }
+.ia-row:hover { background: var(--surface2); }
+
+.ia-label {
+  font-size: 11px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+/* El span del valor hereda color según contenido — se puede colorear desde JS */
+.ia-row span:last-child {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+/* Clases opcionales para colorear el valor desde JS según riesgo */
+.ia-val-alto   { color: var(--red)    !important; }
+.ia-val-medio  { color: var(--amber)  !important; }
+.ia-val-bajo   { color: var(--green)  !important; }
+
+/* Bloque de nivel de riesgo destacado */
 .ia-riesgo     { text-align: center; padding: 20px 16px; background: var(--surface2); border-radius: 8px; }
 .ia-nivel      { font-size: 11px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
 .ia-valor      { font-family: var(--font-mono); font-size: 36px; font-weight: 700; }
 .ia-sub        { font-size: 11px; color: var(--muted); margin-top: 4px; }
-.ia-pred-row   { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); }
-.ia-pred-row:last-child { border-bottom: none; }
-.ia-pred-label { font-size: 12px; color: var(--muted); }
-.ia-pred-val   { font-family: var(--font-mono); font-size: 13px; font-weight: 700; }
-.recoms        { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; }
-.recom-item    { display: flex; align-items: flex-start; gap: 8px; font-size: 11px; color: var(--muted); line-height: 1.4; }
-.recom-arrow   { color: var(--accent); font-family: var(--font-mono); flex-shrink: 0; margin-top: 1px; }
 
+/* Filas pred (legado, por si se usan en otro lugar) */
+.ia-pred-row        { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); }
+.ia-pred-row:last-child { border-bottom: none; }
+.ia-pred-label      { font-size: 12px; color: var(--muted); }
+.ia-pred-val        { font-family: var(--font-mono); font-size: 13px; font-weight: 700; }
+
+/* Recomendaciones */
+.recoms     {
+  display: flex; flex-direction: column; gap: 6px;
+  margin-top: 12px;
+  padding: 10px 12px;
+  background: var(--surface2);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+.recom-item {
+  display: flex; align-items: flex-start; gap: 8px;
+  font-size: 11px; color: var(--muted); line-height: 1.5;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--border);
+}
+.recom-item:last-child { border-bottom: none; padding-bottom: 0; }
+.recom-arrow { color: var(--accent); font-family: var(--font-mono); flex-shrink: 0; margin-top: 1px; }
 /* =====================================================================
    PERSONAL
    ===================================================================== */
@@ -338,7 +389,7 @@ body {
    ================================================================ */
 
 #page-nosotros {
-  background: #f4f7fb;
+  background: rgba(0,212,255,0.08);
   min-height: 100vh;
   padding-bottom: 40px;
 }
