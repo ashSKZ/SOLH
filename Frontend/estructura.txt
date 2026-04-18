@@ -1,0 +1,23 @@
+/solh-frontend
+├── index.html          ← 🔥 TU ARCHIVO PRINCIPAL (no se mueve)
+│
+├── css/
+│   └── dashboard.css
+│
+└── js/
+    ├── main.js         ← 🔥 entry point (nuevo o renombrado)
+    │
+    ├── services/
+    │   └── api.js      ← conexión backend
+    │
+    ├── ui/
+    │   └── ui.js       ← render DOM
+    │
+    ├── charts/
+    │   └── chart.js    ← gráficas
+    │
+    ├── simulation/
+    │   └── sim.js      ← simulación
+    │
+    └── data/
+        └── mockData.js ← opcional (fallback)

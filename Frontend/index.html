@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SOLH — Monitor de Saturación Hospitalaria</title>
+
+  <!-- Fuentes -->
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Chart.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+
+  <!-- Estilos -->
+  <link rel="stylesheet" href="css/dashboard.css">
+</head>
+
+<body>
+
+<!-- ── Header ── -->
+<div class="header">
+  <div class="logo">
+    <div class="logo-mark">
+      <svg viewBox="0 0 20 20">
+        <path d="M10 2C5.58 2 2 5.58 2 10s3.58 8 8 8 8-3.58 8-8-3.58-8-8-8zm0 3a3 3 0 110 6 3 3 0 010-6zm0 10.5a6.5 6.5 0 01-4.88-2.19C6.21 12.05 8.02 11.5 10 11.5c1.98 0 3.79.55 4.88 1.81A6.5 6.5 0 0110 15.5z"/>
+      </svg>
+    </div>
+    <div>
+      <div class="logo-text">SOLH</div>
+      <div class="logo-sub">Monitor de Saturación Hospitalaria</div>
+    </div>
+  </div>
+
+  <div class="header-right">
+    <div class="live-badge">
+      <div class="live-dot" id="live-dot"></div>
+      <span id="live-label">EN VIVO</span>
+    </div>
+
+    <button class="pause-btn" id="pause-btn" onclick="togglePausa()" aria-label="Pausar simulación">
+      &#9208;
+    </button>
+
+    <div class="timestamp" id="ts">--:--:--</div>
+  </div>
+</div>
+
+<!-- ── Main ── -->
+<div class="main">
+
+  <!-- KPIs -->
+  <div class="kpi-grid">
+    <div class="kpi-card blue">
+      <div class="kpi-label">Pacientes activos</div>
+      <div class="kpi-value blue" id="kpi-pac">--</div>
+      <div class="kpi-sub">Hospitalizados actualmente</div>
+      <div class="kpi-delta delta-up" id="d-pac">--</div>
+    </div>
+
+    <div class="kpi-card green">
+      <div class="kpi-label">Camas disponibles</div>
+      <div class="kpi-value green" id="kpi-camas">--</div>
+      <div class="kpi-sub">De 180 camas totales</div>
+      <div class="kpi-delta delta-down" id="d-camas">--</div>
+    </div>
+
+    <div class="kpi-card amber">
+      <div class="kpi-label">Saturación actual</div>
+      <div class="kpi-value amber" id="kpi-sat">--</div>
+      <div class="kpi-sub">Nivel actual</div>
+      <div class="kpi-delta delta-warn" id="d-sat">--</div>
+    </div>
+
+    <div class="kpi-card purple">
+      <div class="kpi-label">Personal disponible</div>
+      <div class="kpi-value purple" id="kpi-per">--</div>
+      <div class="kpi-sub">Médicos + enfermeros</div>
+      <div class="kpi-delta delta-up" id="d-per">--</div>
+    </div>
+  </div>
+
+  <!-- Gráfica -->
+  <div class="grid3">
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">Historial de saturación</span>
+        <div style="display:flex; gap:6px;">
+          <button class="chart-tab chart-tab--active" onclick="switchChart('actual')">TIEMPO REAL</button>
+          <button class="chart-tab" onclick="switchChart('pasadas')">GRÁFICAS PASADAS</button>
+        </div>
+      </div>
+
+      <div id="day-selector" style="display:none;">
+        <button onclick="selectDay(0)">Hoy</button>
+        <button onclick="selectDay(1)">Ayer</button>
+      </div>
+
+      <div class="chart-wrap">
+        <canvas id="histChart"></canvas>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">Saturación por área</span>
+      </div>
+      <div id="areas-sat"></div>
+    </div>
+  </div>
+
+  <!-- Alertas -->
+  <div class="panel">
+    <div class="panel-header">
+      <span class="panel-title">Alertas</span>
+    </div>
+    <div id="alerts-list"></div>
+  </div>
+
+</div>
+
+<div class="footer">
+  SOLH v1.0 — Hackatón — Backend conectado
+</div>
+
+<script type="module" src="./js/main.js"></script>
+
+</body>
+</html>
