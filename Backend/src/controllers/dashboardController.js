@@ -49,8 +49,40 @@ const getGrafica = async (req, res) => {
   res.json(datos.reverse());
 };
 
+const getAlertas = async (req, res) => {
+  const ultimo = await Flujo.findOne().sort({ createdAt: -1 });
+
+  const alertas = [];
+
+  if (!ultimo) return res.json(alertas);
+
+  if (ultimo.camas_disponibles <= 5) {
+    alertas.push({
+      mensaje: "Camas críticas",
+      nivel: "alto"
+    });
+  }
+
+  if (ultimo.pacientes_espera > 30) {
+    alertas.push({
+      mensaje: "Alta demanda de pacientes",
+      nivel: "medio"
+    });
+  }
+
+  if (ultimo.nivel_ia === "alto") {
+    alertas.push({
+      mensaje: "Riesgo alto detectado por IA",
+      nivel: "alto"
+    });
+  }
+
+  res.json(alertas);
+};
+
 module.exports = {
   getResumen,
   generarSimulacion,
-  getGrafica
+  getGrafica,
+  getAlertas
 };
